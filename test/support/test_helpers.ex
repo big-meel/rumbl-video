@@ -3,28 +3,28 @@ defmodule Rumbl.TestHelpers do
   alias Rumbl.Multimedia
 
   def user_fixture(attrs \\ %{}) do
-    {:ok, user } = 
-    attrs 
-    |> Enum.into(%{
-      name:     "Some User",
-      username: "user#{System.unique_integer([:positive])}",
-      password: attrs[:password] || "supersecret"
-    })
-    |> Accounts.register_user()
+    {:ok, user} =
+      attrs
+      |> Enum.into(%{
+        name: "Some User",
+        username: "user#{System.unique_integer([:positive])}",
+        password: attrs[:password] || "supersecret"
+      })
+      |> Accounts.register_user()
 
     user
   end
 
   def video_fixture(%Accounts.User{} = user, attrs \\ %{}) do
-    attrs = 
+    attrs =
       Enum.into(attrs, %{
         title: "A Title",
-        url:   "http://example.com",
+        url: "http://example.com",
         description: "a description"
       })
 
-      {:ok, video} = Multimedia.create_video(user, attrs)
+    {:ok, video} = Multimedia.create_video(user, attrs)
 
-      video
+    video
   end
 end

@@ -10,11 +10,11 @@ defmodule Rumbl.MultimediaTest do
         Multimedia.create_category!(name)
       end
 
-      alpha_names = for %Category{name: name} <- Multimedia.list_alphabetical_categories() do
-        
-        name
-      end
-      
+      alpha_names =
+        for %Category{name: name} <- Multimedia.list_alphabetical_categories() do
+          name
+        end
+
       assert alpha_names == ~w(Action Comedy Drama)
     end
   end
@@ -45,8 +45,8 @@ defmodule Rumbl.MultimediaTest do
       assert {:ok, %Video{} = video} = Multimedia.create_video(owner, @valid_attrs)
 
       assert video.description == "desc"
-      assert video.title       == "title"
-      assert video.url         == "http://local"
+      assert video.title == "title"
+      assert video.url == "http://local"
     end
 
     test "create/video/2 with invalid data returns error changeset" do

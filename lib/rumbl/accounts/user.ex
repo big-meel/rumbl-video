@@ -16,7 +16,8 @@ defmodule Rumbl.Accounts.User do
 
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:name, :username]) # converts raw map to a changeset
+    # converts raw map to a changeset
+    |> cast(attrs, [:name, :username])
     |> validate_required([:name, :username])
     |> validate_length(:username, min: 1, max: 20)
     |> unique_constraint(:username)
@@ -24,8 +25,10 @@ defmodule Rumbl.Accounts.User do
 
   def registration_changeset(user, params) do
     user
-    |> changeset(params) # Calls changeset function above
-    |> cast(params, [:password]) # cast (think handle cast) is used to assert new state
+    # Calls changeset function above
+    |> changeset(params)
+    # cast (think handle cast) is used to assert new state
+    |> cast(params, [:password])
     |> validate_required([:password])
     |> validate_length(:password, min: 6, max: 100)
     |> put_pass_hash()
@@ -35,6 +38,7 @@ defmodule Rumbl.Accounts.User do
     case changeset do
       %Ecto.Changeset{valid?: true, changes: %{password: pass}} ->
         put_change(changeset, :password_hash, Pbkdf2.hash_pwd_salt(pass))
+
       _ ->
         changeset
     end

@@ -9,7 +9,7 @@ defmodule RumblWeb.SessionController do
 
   def create(conn, %{"session" => %{"username" => username, "password" => pass}}) do
     case Rumbl.Accounts.authenticate_by_username_and_pass(username, pass) do
-      {:ok, user} -> 
+      {:ok, user} ->
         conn
         |> RumblWeb.Auth.login(user)
         |> put_flash(:info, "Welcome back!")

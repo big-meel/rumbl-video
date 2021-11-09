@@ -9,7 +9,8 @@ defmodule Rumbl.Application do
   def start(_type, _args) do
     children = [
       # Start the Ecto repository
-      Rumbl.Repo,
+      {Phoenix.PubSub, name: Rumbl.PubSub},
+      Rumbl.Repo
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

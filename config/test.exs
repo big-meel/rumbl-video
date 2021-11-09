@@ -28,3 +28,5 @@ config :rumbl, Rumbl.Mailer, adapter: Swoosh.Adapters.Test
 
 # Initialize plugs at runtime for faster test compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :pbkdf2_elixir, :rounds, 1

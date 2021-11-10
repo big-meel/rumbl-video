@@ -11,6 +11,8 @@ defmodule InfoSys.Application do
       # Supervisor.child_spec({InfoSys.Counter, 15}, id: :long), # new counter worker { Module, initial_value} initial_value is received by start_link
       # Supervisor.child_spec({InfoSys.Counter, 5}, id: :short), # new counter worker { Module, initial_value} initial_value is received by start_link
       # Supervisor.child_spec({InfoSys.Counter, 10}, id: :medium), # new counter worker { Module, initial_value} initial_value is received by start_link
+      InfoSys.Cache,
+      {Task.Supervisor, name: InfoSys.TaskSupervisor}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

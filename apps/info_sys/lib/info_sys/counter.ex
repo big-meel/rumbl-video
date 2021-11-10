@@ -1,6 +1,17 @@
 defmodule InfoSys.Counter do
   use GenServer
 
+  # If necessary one could define their own child spec
+  # def child_spec(arg) do
+  #   %{
+  #     id: __MODULE__,
+  #     start: { __MODULE__, :start_link, [arg] },
+  #     restart: :temporary,
+  #     shutdown: 5000,
+  #     type: :worker
+  #   }
+  # end
+
   # <--------------- Implementation ------------------>
   def inc(pid), do: GenServer.cast(pid, :inc)
 

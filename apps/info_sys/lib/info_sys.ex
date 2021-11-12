@@ -11,7 +11,7 @@ defmodule InfoSys do
     backends = opts[:backends] || @backends
 
     backends
-    |> Enum.map(&asynv_query(&1, query, opts))
+    |> Enum.map(&async_query(&1, query, opts))
   end
 
   defp async_query(backend, query, opts) do

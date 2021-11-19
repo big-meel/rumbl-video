@@ -16,7 +16,7 @@ defmodule InfoSys do
         fetch_cached_results(backends, query, opts)
 
         uncached_backends
-        |> Enum.map(&async_query(&1, query, opts))
+        |> Enum.map(&InfoSys.async_query(&1, query, opts))
         |> Task.yield_many(timeout)
         |> Enum.map(fn {task, res} -> 
           res || Task.shutdown(task, :brutal_kill)
@@ -37,7 +37,7 @@ defmodule InfoSys do
               backends, 
               {[], []},
               fn backend, {uncached_backends, acc_results} -> 
-                case Cache.fetch({backed.name(), query, opts[:limit]}) do
+                case Cache.fetch({backend.name(), query, opts[:limit]}) do
                   {:ok, results} -> {uncached_backends, [results | acc_results]}
                   :error -> {[backend | uncached_backends], acc_results}
                 end
@@ -53,28 +53,35 @@ defmodule InfoSys do
         end)
       end
 
-  end
+      defp async_query(backend, query, opts) do
+        Task.Supervisor.async_nolink(InfoSys.TaskSupervisor, 
+          backend, :compute, [query, opts], shutdown: :brutal_kill
+          )
+      end
 
-  def compute(query, opts \\ []) do
-    timeout = opts[:timeout] || 10_000
-    opts = Keyword.put_new(opts, :limit, 10)
-    backends = opts[:backends] || @backends
-
-    backends
-    |> Enum.map(&async_query(&1, query, opts))
-    |> Task.yield_many(timeout)
-    |> Enum.map(fn {task, res} -> res || Task.shutdown(task, :brutal_kill) end)
-    |> Enum.flat_map(fn 
-      {:ok, results} -> results
-      _ -> []
-    end)
-    |> Enum.sort(&(&1.score >= &2.score))
-    |> Enum.take(opts[:limit])
+    end
+    
+    def compute(query, opts \\ []) do
+        timeout = opts[:timeout] || 10_000
+        opts = Keyword.put_new(opts, :limit, 10)
+        backends = opts[:backends] || @backends
+      
+        backends
+        |> Enum.map(&async_query(&1, query, opts))
+        |> Task.yield_many(timeout)
+        |> Enum.map(fn {task, res} -> res || Task.shutdown(task, :brutal_kill) end)
+        |> Enum.flat_map(fn 
+            {:ok, results} -> results
+            _ -> []
+          end)
+          |> Enum.sort(&(&1.score >= &2.score))
+          |> Enum.take(opts[:limit])
+      end
+        
+      defp async_query(backend, query, opts) do
+        Task.Supervisor.async_nolink(InfoSys.TaskSupervisor, 
+          backend, :compute, [query, opts], shutdown: :brutal_kill
+          )
+      end
   end
-
-  defp async_query(backend, query, opts) do
-    Task.Supervisor.async_nolink(InfoSys.TaskSupervisor, 
-      backend, :compute, [query, opts], shutdown: :brutal_kill
-      )
-  end
-end
+      
